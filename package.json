@@ -1,0 +1,32 @@
+{
+  "name": "weathercollector",
+  "version": "1.0.0",
+  "description": "A service to collect weather data from OpenWeather and save it to and SQLite3 DB",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/smart-energy-system/WeatherCollector.git"
+  },
+  "keywords": [
+    "Weather",
+    "HTTP",
+    "Request",
+    "SQLite3"
+  ],
+  "author": "spethso",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/smart-energy-system/WeatherCollector/issues"
+  },
+  "homepage": "https://github.com/smart-energy-system/WeatherCollector#readme",
+  "dependencies": {
+    "hashmap": "^2.3.0",
+    "request": "^2.88.0",
+    "sqlite3": "^4.0.3",
+    "uuid": "^3.3.2"
+  }
+}
