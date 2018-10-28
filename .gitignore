@@ -62,3 +62,6 @@ typings/
 
 # sqlite3 database file
 weather.db
+
+# config file
+config.json

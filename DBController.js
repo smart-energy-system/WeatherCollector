@@ -42,7 +42,7 @@ module.exports = class DBController {
      */
     storeWeatherData(weatherData, lat, lon) {
         let stmt = prepare('INSERT INTO Weather(id, lat, lon, timestamp, temp, windspeed, airpressure, humidity) VALUES (?, ?, ?, ?, ?, ?, ?, ?);');
-        let timestamp = new Date().getDate();
+        let timestamp = new Date();
         let temp = weatherData.main.temp;
         let windspeed = weatherData.wind.speed;
         let airpressure = weatherData.main.pressure;
@@ -61,7 +61,7 @@ module.exports = class DBController {
      * @param {*} callback function with result in parameter if no error exists else null
      */
     getAllWeatherFromDBByCoordinates(lat, lon, callback) {
-        let stmt = prepare('SELECT id, lat, lon, timestamp, temp, windspeed, airpressure, humidity FROM Weather WHERE lat = ? AND lon = ?;');
+        let stmt = prepare('SELECT id, lat, lon, timestamp, temp, windspeed, airpressure, humidity FROM Weather WHERE lat = ? AND lon = ? ORDER BY timestamp DESC;');
         stmt.all(lat, lon, function (err, result) {
             if (err) {
                 console.log('[Error] Error on receiving all weatherdata of specified coordinates');
@@ -69,6 +69,18 @@ module.exports = class DBController {
             }
             callback(result);
         });
+    }
+
+    /**
+     * Gets latest weather data of specific coordinates from DB.
+     * @param {*} lat latitute
+     * @param {*} lon longitute
+     * @param {*} callback function with result in parameter if no error exists else null
+     */
+    getLatestWeatherFromDBByCoordinates(lat, lon, callback) {
+        this.getAllWeatherFromDBByCoordinates(lat, lon, (result) => {
+            callback(result[0]);
+        })
     }
 
 }

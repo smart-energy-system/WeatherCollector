@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/smart-energy-system/WeatherCollector#readme",
   "dependencies": {
+    "fs": "0.0.1-security",
     "hashmap": "^2.3.0",
     "request": "^2.88.0",
     "sqlite3": "^4.0.3",

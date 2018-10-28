@@ -1,12 +1,35 @@
 const WeatherCollector = require('./WeatherCollector');
 const DBController = require('./DBController');
+const fs = require('fs');
 
-const token = '&APPID=4717b615b907e7397d0b5fd0b0e02d60';
-let w = new WeatherCollector(token, 48.777111, 9.180770);
-// w.retrieveWeatherAndSave();
-let w2 = new WeatherCollector(token, 31.230391, 121.473701);
-// w2.retrieveWeatherAndSave();
-let db = new DBController();
-db.getAllWeatherFromDBByCoordinates(31.230391, 121.473701, (result) => {
-    console.log(result);
-});
+let config;
+
+function init(callback) {
+    const args = process.argv.slice(2);
+    if (args.length === 3) {
+        this.config = {
+            apiToken: args[0],
+            lat: args[1],
+            lon: args[2]
+        };
+        fs.writeFileSync('./config.json', JSON.stringify(this.config), 'utf8', (err) => {
+            console.log('[Error] Error while writing config file');
+        });
+        callback(config);
+    } else if (fs.existsSync('./config.json')) {
+        config = JSON.parse(fs.readFileSync('./config.json', 'utf-8', (err) => {
+            console.log('[Error] Error while reading config file');
+        }));
+        callback(config);
+    }
+}
+init((config) => {
+    const weatherCollector = new WeatherCollector(config.apiToken, config.lat, config.lon);
+    const db = new DBController();
+    
+    
+    // weatherCollector.retrieveWeatherAndSave();
+    db.getLatestWeatherFromDBByCoordinates(config.lat, config.lon, (result) => {
+        console.log(result);
+    });
+})
