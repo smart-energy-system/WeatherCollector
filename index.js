@@ -68,8 +68,8 @@ api.use(function (req, res, next) {
 });
 
 api.post('/weathercollectors', (req, res, next) => {
-    let lat = req.query.lat;
-    let lon = req.query.lon;
+    let lat = req.body.lat;
+    let lon = req.body.lon;
     if (lat && lon) {
         let apiToken = config.apiToken;
         let weatherCollector = new WeatherCollector(apiToken, lat, lon);
@@ -82,6 +82,20 @@ api.post('/weathercollectors', (req, res, next) => {
             id: id
         }));
     } else {
-        res.status(400).end('Bad request: query part is not defined');
+        res.status(400).end('Bad request: body properties are not defined');
+    }
+});
+
+api.delete('/weathercollectors', (req, res, next) => {
+    let id = req.body.id;
+    if (id) {
+        if (weatherCollectors.has(id)) {
+            weatherCollectors.remove(id);
+            res.status(200).end('Deleted');
+        } else {
+            res.status(400).end('Bad request: There is no such weatherColelctor');
+        }
+    } else {
+        res.status(400).end('Bad request: id is not defined');
     }
 });
