@@ -9,6 +9,17 @@ module.exports = class WeatherCollector {
         this.lon = lon;
         this.lat = lat;
         this.db = new DBController();
+        this.canStart = true;
+    }
+
+    /**
+     * Starts the WeatherCollector object
+     */
+    async start() {
+        setTimeout(() => {
+            this.retrieveWeatherAndSave();
+            this.start();
+        }, 6000);
     }
 
 
