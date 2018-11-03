@@ -3,7 +3,7 @@ const DBController = require('./DBController');
 const fs = require('fs');
 let config;
 function init(callback) {
-    const args = process.argv.slice(3);
+    const args = process.argv.slice(2);
     if (args.length === 4) {
         config = {
             apiToken: args[0],
