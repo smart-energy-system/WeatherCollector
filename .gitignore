@@ -66,3 +66,6 @@ weather.db
 # config file
 config.json
 testconfig.json
+
+# saved WeatherCollector objects
+weatherCollectors.json

@@ -26,11 +26,49 @@ let server = api.listen(PORT, () => {
         }));
     }
 
+    fs.exists('./weatherCollectors.json', (exists) => {
+        if (exists) {
+            readObjects();
+        }
+    });
 
     let host = server.address().address;
     let port = server.address().port;
     console.log("[API] [Start] Listening at http://%s:%s", host, port);
 });
+
+async function writeObjects() {
+    let objects = [];
+    weatherCollectors.forEach((value, key) => {
+        console.log(key);
+        objects.push({
+            id: key,
+            lon: value.lon,
+            lat: value.lat
+        })
+    });
+    fs.writeFile('./weatherCollectors.json', JSON.stringify(objects), 'utf8', (err) => {
+        if (err) {
+            console.log('[Error] error on writing weatherCollectors.json');
+        }
+    });
+}
+
+async function readObjects(callback) {
+    fs.readFile('./weatherCollectors.json', 'utf-8', (err, data) => {
+        if (err) {
+            console.log('[Error] Error while reading weatherCollectors.json');
+        }
+        else {
+            let objects = JSON.parse(data);
+            objects.forEach((o) => {
+                let weatherCollector = new WeatherCollector(config.apiToken, o.lat, o.lon);
+                weatherCollectors.set(o.id, weatherCollector);
+                weatherCollector.start();
+            });
+        }
+    });
+}
 
 // Setup Global Middlewares
 api.use(compression());
@@ -59,6 +97,8 @@ api.post('/weathercollectors', (req, res, next) => {
         weatherCollector.start();
         let id = uuid();
         weatherCollectors.set(id, weatherCollector);
+        writeObjects();
+
         res.status(201).end(JSON.stringify({
             lat: lat,
             lon: lon,
@@ -74,6 +114,8 @@ api.delete('/weathercollectors', (req, res, next) => {
     if (id) {
         if (weatherCollectors.has(id)) {
             weatherCollectors.remove(id);
+            writeObjects();
+
             res.status(200).end('Deleted');
         } else {
             res.status(400).end('Bad request: There is no such weatherColelctor');
