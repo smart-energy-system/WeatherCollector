@@ -43,10 +43,10 @@ module.exports = class DBController {
     storeWeatherData(weatherData, lat, lon) {
         let stmt = prepare('INSERT INTO Weather(id, lat, lon, timestamp, temp, windspeed, airpressure, humidity) VALUES (?, ?, ?, ?, ?, ?, ?, ?);');
         let timestamp = new Date();
-        let temp = weatherData.main.temp;
-        let windspeed = weatherData.wind.speed;
-        let airpressure = weatherData.main.pressure;
-        let humidity = weatherData.main.humidity;
+        let temp = weatherData.data[0].temp;
+        let windspeed = weatherData.data[0].wind_spd;
+        let airpressure = weatherData.data[0].pres;
+        let humidity = weatherData.data[0].rh;
         stmt.run(uuid(), lat, lon, timestamp, temp, windspeed, airpressure, humidity, (err) => {
             if (err) {
                 console.log('[Error] Error on inserting new weather data')
