@@ -17,6 +17,9 @@
     "Request",
     "SQLite3"
   ],
+  "nodemonConfig": {
+    "ignore": ["config.json", "testconfig.json"]
+  },
   "author": "spethso",
   "license": "MIT",
   "bugs": {

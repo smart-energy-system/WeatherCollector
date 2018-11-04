@@ -1,5 +1,4 @@
 const WeatherCollector = require('./WeatherCollector');
-const DBController = require('./DBController');
 const fs = require('fs');
 const HashMap = require('hashmap');
 const uuid = require('uuid/v4');
