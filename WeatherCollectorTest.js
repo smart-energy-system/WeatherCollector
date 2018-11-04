@@ -44,6 +44,10 @@ init((config) => {
             db.getLatestWeatherFromDBByCoordinates(config.lat, config.lon, (result) => {
                 console.log(result);
             });
-        }   
+        } else if (config.mode == 'get forecast') {
+            db.getWeatherForecastByCoordinates(config.lat, config.lon, (result) => {
+                console.log(result);
+            });
+        }
     }
 });

@@ -137,4 +137,21 @@ module.exports = class DBController {
         })
     }
 
+    /**
+     * Gets 24 hour weather forecast of specific coordinates from DB.
+     * @param {*} lat latitute
+     * @param {*} lon longitute
+     * @param {*} callback function with result in parameter if no error exists else null
+     */
+    getWeatherForecastByCoordinates(lat, lon, callback) {
+        let stmt = prepare('SELECT id, lat, lon, timestamp, temp, windspeed, airpressure, humidity FROM WeatherForecast WHERE lat = ? AND lon = ? ORDER BY timestamp DESC;');
+        stmt.all(lat, lon, function (err, result) {
+            if (err) {
+                console.log('[Error] Error on receiving 24 hour weather forecast of specified coordinates');
+                callback(null);
+            }
+            callback(result);
+        });
+    }
+
 }
