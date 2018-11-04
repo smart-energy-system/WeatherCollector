@@ -14,11 +14,9 @@ let weatherCollectors = new HashMap();
 // Create Server
 let server = api.listen(PORT, () => {
     const args = process.argv.slice(2);
-    if (args.length === 3) {
+    if (args.length === 1) {
         config = {
-            apiToken: args[0],
-            lat: args[1],
-            lon: args[2]
+            apiToken: args[0]
         };
         fs.writeFileSync('./config.json', JSON.stringify(config), 'utf8', (err) => {
             console.log('[Error] Error while writing config file');
