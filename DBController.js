@@ -37,8 +37,36 @@ function prepare(statement, next) {
 module.exports = class DBController {
 
     /**
+     * Sores weather forecast on hourly basis in the DB
+     * @param {*} weatherData JSON Object of retrieved weather data
+     * @param {*} lat latitute of the location
+     * @param {*} lon longitute of the location
+     */
+    storeWeatherForecastData(weatherData, lat, lon) {
+        let stmt = prepare('INSERT INTO WeatherForecast(id, lat, lon, timestamp, temp, windspeed, airpressure, humidity) VALUES (?, ?, ?, ?, ?, ?, ?, ?);');
+        let data = weatherData.data;
+        let timestamp = Date.now();
+        // iterate over Array and save all data
+        data.forEach((singleWeatherData) => {
+            let temp = singleWeatherData.temp;
+            let windspeed = singleWeatherData.wind_spd;
+            let airpressure = singleWeatherData.pres;
+            let humidity = singleWeatherData.rh;
+            stmt.run(uuid(), lat, lon, timestamp, temp, windspeed, airpressure, humidity, (err) => {
+                if (err) {
+                    console.log('[Error] Error on inserting new weather data')
+                }
+            });
+            // Update milliseconds timestamp for next entry
+            timestamp += 3600000;
+        });
+    }
+
+    /**
      * Stores weather data in the DB.
      * @param {*} weatherData JSON Object of retrieved weather data
+     * @param {*} lat latitute of the location
+     * @param {*} lon longitute of the location
      */
     storeWeatherData(weatherData, lat, lon) {
         let stmt = prepare('INSERT INTO Weather(id, lat, lon, timestamp, temp, windspeed, airpressure, humidity) VALUES (?, ?, ?, ?, ?, ?, ?, ?);');

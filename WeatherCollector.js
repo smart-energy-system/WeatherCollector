@@ -38,6 +38,20 @@ module.exports = class WeatherCollector {
     }
 
     /**
+     * Function to retrieve weather forecast data and save them to an SQLite3 DB.
+     */
+    async retrieveForecastAndSave() {
+        try {
+            const weatherData = await this.getWeatherForecast(this.lat, this.lon);
+            // Save weather data in DB
+            this.db.storeWeatherForecastData(weatherData, this.lat, this.lon);
+            //return weatherData;
+        } catch (error) {
+
+        };
+    }
+
+    /**
      * Gets weather data from weatherbit.io by specified coordinates.
      * @param {} lat The latitute coordinate
      * @param {*} lon The longitute coordinate

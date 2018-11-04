@@ -38,6 +38,8 @@ init((config) => {
 
         if (config.mode == 'collect') {
             weatherCollector.retrieveWeatherAndSave();
+        } else if (config.mode == 'collect forecast') {
+            weatherCollector.retrieveForecastAndSave();
         } else if (config.mode == 'get') {
             db.getLatestWeatherFromDBByCoordinates(config.lat, config.lon, (result) => {
                 console.log(result);
