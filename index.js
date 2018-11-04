@@ -37,6 +37,9 @@ let server = api.listen(PORT, () => {
     console.log("[API] [Start] Listening at http://%s:%s", host, port);
 });
 
+/**
+ * Writes a string version of all WeatherCollector objects to file
+ */
 async function writeObjects() {
     let objects = [];
     weatherCollectors.forEach((value, key) => {
@@ -54,6 +57,11 @@ async function writeObjects() {
     });
 }
 
+/**
+ * Reads the string version of all WeatherCollector objects from file,
+ * build the objects and start them collecting data.
+ * @param {*} callback 
+ */
 async function readObjects(callback) {
     fs.readFile('./weatherCollectors.json', 'utf-8', (err, data) => {
         if (err) {

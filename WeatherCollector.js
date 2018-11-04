@@ -38,14 +38,35 @@ module.exports = class WeatherCollector {
     }
 
     /**
-     * Gets weather data from OpenWeather.org by specified coordinates.
+     * Gets weather data from weatherbit.io by specified coordinates.
      * @param {} lat The latitute coordinate
      * @param {*} lon The longitute coordinate
      */
     getWeatherDataByCoord(lat, lon) {
         return new Promise((resolve, reject) => {
             request({
-                uri: `http://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric${this.apiToken}`,
+                uri: `https://api.weatherbit.io/v2.0/current?lat=${lat}&lon=${lon}&key=${this.apiToken}`,
+                method: 'GET'
+            }, (error, response, body) => {
+                if (error) {
+                    console.log('Error on retrieving weather data');
+                    reject(error);
+                    return;
+                }
+                resolve(JSON.parse(body));
+            });
+        });
+    }
+
+    /**
+     * Gets 24 hours weather forecast on hourly basis data from weatherbit.io by specified coordinates.
+     * @param {} lat The latitute coordinate
+     * @param {*} lon The longitute coordinate
+     */
+    getWeatherForecast(lat, lon) {
+        return new Promise((resolve, reject) => {
+            request({
+                uri: `https://api.weatherbit.io/v2.0/forecast/hourly?lat=${lat}&lon=${lon}&key=${this.apiToken}&hours=24`,
                 method: 'GET'
             }, (error, response, body) => {
                 if (error) {

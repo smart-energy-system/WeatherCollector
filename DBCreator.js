@@ -6,6 +6,8 @@ function recreateDB() {
         // create DB tables
         db.run('DROP TABLE IF EXISTS Weather;');
         db.run('CREATE TABLE Weather (id VARCHAR(255) PRIMARY KEY, lat REAL, lon REAL, timestamp VARCHAR(255), temp REAL, windspeed REAL, airpressure REAL, humidity REAL);');
+        db.run('DROP TABLE IF EXISTS WeatherForecast;');
+        db.run('CREATE TABLE WeatherForecast (id VARCHAR(255) PRIMARY KEY, lat REAL, lon REAL, timestamp VARCHAR(255), temp REAL, windspeed REAL, airpressure REAL, humidity REAL);');
     });
     db.close();
 
