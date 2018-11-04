@@ -42,24 +42,29 @@ module.exports = class DBController {
      * @param {*} lat latitute of the location
      * @param {*} lon longitute of the location
      */
-    storeWeatherForecastData(weatherData, lat, lon) {
-        let stmt = prepare('INSERT INTO WeatherForecast(id, lat, lon, timestamp, temp, windspeed, airpressure, humidity) VALUES (?, ?, ?, ?, ?, ?, ?, ?);');
-        let data = weatherData.data;
-        let timestamp = Date.now();
-        // iterate over Array and save all data
-        data.forEach((singleWeatherData) => {
-            let temp = singleWeatherData.temp;
-            let windspeed = singleWeatherData.wind_spd;
-            let airpressure = singleWeatherData.pres;
-            let humidity = singleWeatherData.rh;
-            stmt.run(uuid(), lat, lon, timestamp, temp, windspeed, airpressure, humidity, (err) => {
-                if (err) {
-                    console.log('[Error] Error on inserting new weather data')
-                }
+    async storeWeatherForecastData(weatherData, lat, lon) {
+        try {
+            await this.deleteAllWeatherForecastByCoordinates(lat, lon);
+            let stmt = prepare('INSERT INTO WeatherForecast(id, lat, lon, timestamp, temp, windspeed, airpressure, humidity) VALUES (?, ?, ?, ?, ?, ?, ?, ?);');
+            let data = weatherData.data;
+            let timestamp = Date.now();
+            // iterate over Array and save all data
+            data.forEach((singleWeatherData) => {
+                let temp = singleWeatherData.temp;
+                let windspeed = singleWeatherData.wind_spd;
+                let airpressure = singleWeatherData.pres;
+                let humidity = singleWeatherData.rh;
+                stmt.run(uuid(), lat, lon, timestamp, temp, windspeed, airpressure, humidity, (err) => {
+                    if (err) {
+                        console.log('[Error] Error on inserting new weather data')
+                    }
+                });
+                // Update milliseconds timestamp for next entry
+                timestamp += 3600000;
             });
-            // Update milliseconds timestamp for next entry
-            timestamp += 3600000;
-        });
+        } catch (error) {
+            console.log('[Log] Catched error on storing new forecast data');
+        }
     }
 
     /**
@@ -79,6 +84,27 @@ module.exports = class DBController {
             if (err) {
                 console.log('[Error] Error on inserting new weather data')
             }
+        });
+    }
+
+    /**
+     * Deletes all weather forecast data of specific coordinates from DB.
+     * @param {*} lat latitute
+     * @param {*} lon longitute
+     * @param {*} callback function with result in parameter if no error exists else null
+     */
+    deleteAllWeatherForecastByCoordinates(lat, lon) {
+        let stmt = prepare('DELETE FROM WeatherForecast WHERE lat = ? AND lon = ?;');
+        return new Promise((resolve, reject) => {
+            stmt.run(lat, lon, (err) => {
+                if (err) {
+                    console.log('[Error] Error on deleting WeatherForecast');
+                    reject(err);
+                    return;
+                } else {
+                    resolve();
+                }
+            })
         });
     }
 

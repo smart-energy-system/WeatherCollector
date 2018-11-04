@@ -33,7 +33,7 @@ module.exports = class WeatherCollector {
             this.db.storeWeatherData(weatherData, this.lat, this.lon);
             //return weatherData;
         } catch (error) {
-
+            console.log('[Log] Catched error in retrieving current weather data and store it into DB');
         };
     }
 
@@ -47,7 +47,7 @@ module.exports = class WeatherCollector {
             this.db.storeWeatherForecastData(weatherData, this.lat, this.lon);
             //return weatherData;
         } catch (error) {
-
+            console.log('[Log] Catched error in retrieving forecast and store it into DB');
         };
     }
 
