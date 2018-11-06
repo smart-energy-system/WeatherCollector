@@ -1,7 +1,9 @@
 const request = require('request');
 const DBController = require('./DBController');
 
-
+/**
+ * Collects weather data from weatherbit.io
+ */
 module.exports = class WeatherCollector {
 
     constructor(apiToken, lat, lon) {
@@ -16,10 +18,12 @@ module.exports = class WeatherCollector {
      * Starts the WeatherCollector object
      */
     async start() {
-        setTimeout(() => {
+        this.retrieveWeatherAndSave();
+        this.retrieveForecastAndSave();
+        setInterval(() => {
             this.retrieveWeatherAndSave();
-            this.start();
-        }, 6000);
+            this.retrieveForecastAndSave();
+        }, 3600000);
     }
 
 

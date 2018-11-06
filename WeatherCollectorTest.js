@@ -48,6 +48,8 @@ init((config) => {
             db.getWeatherForecastByCoordinates(config.lat, config.lon, (result) => {
                 console.log(result);
             });
+        } else if (config.mode == 'start') {
+            weatherCollector.start();
         }
     }
 });

@@ -34,6 +34,9 @@ function prepare(statement, next) {
     return stmt;
 }
 
+/**
+ * Saves and loads weather data 
+ */
 module.exports = class DBController {
 
     /**
