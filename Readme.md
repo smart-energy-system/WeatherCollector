@@ -13,7 +13,7 @@ First, run `npm install` to install needed dependancy packages. You can look up 
 ## Test functionalities
 Skip this section if you directly want to run the server. Otherwise you can test functionality without running the complete server. You just need to run `WeatherCollectorTest.js` to play around with some locations. 
 On the first run of the module you need to provide it with your weatherbit.io api key, latitute and longitute of the location: `node WeatherCollectorTest.js "<API Key>" <lat> <lon> "<mode>"`. 
-If you haven't any api key from [weatherbit.io](https://www.weatherbit.io/), see the section of requesting one ([Requesting weatherbit.io api key](weatherbit.io)) and return afterwards.
+If you haven't any api key from [weatherbit.io](https://www.weatherbit.io/), see the section of requesting one ([Requesting weatherbit.io api key](#requesting-weatherbitio-api-key)) and return afterwards.
 There are 5 modes available to test:
 
  - `collect` Collects a current weather data of the given location and stores it into the database
@@ -25,7 +25,7 @@ There are 5 modes available to test:
 If you did run the complete run command once, a test config file was created. So unless you want to change your API key or the location you can shorten the run command a bit, using only `node WeatherCollectorTest.js "<mode>"`.
 
 ## Run the server
-If you have already requested a [weather.io](https://www.weatherbit.io/) API key, you can simply run the server with `npm start <API key>`. This will create a config file with your API key, so later you can start the server just running `npm start` command. If you haven't requested a weather.io API key, take a look at the section of requesting one ([Requesting weatherbit.io api key](#Requesting).
+If you have already requested a [weather.io](https://www.weatherbit.io/) API key, you can simply run the server with `npm start <API key>`. This will create a config file with your API key, so later you can start the server just running `npm start` command. If you haven't requested a weather.io API key, take a look at the section of requesting one ([Requesting weatherbit.io api key](#requesting-weatherbitio-api-key)).
 
 ## Requesting [weatherbit.io](https://www.weatherbit.io/) API key
 
