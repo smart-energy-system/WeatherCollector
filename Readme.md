@@ -31,7 +31,7 @@ If you have already requested a [weather.io](https://www.weatherbit.io/) API key
 There are two endpoints available on the server. 
 
 To create a new WeatherCollector object, you can send an POST request against `<basepath>/weathercollectors` providing the following data as content-type `application/json` in body :`{ "lat":<lat>, "lon": <lon> }`. 
-If lat and lon are correct and the object is created successfully you will get status 201 and the following JSON object in return: `{ "lat": <lat>, "lon":<lon>, id:<id> }`. The id is the id of the object created. You will need it to delete the object later, so don't forget it. After creating the object, the object is requesting the weather data (current and forecast) every hour.
+If lat and lon are correct and the object is created successfully you will get status 201 and the following JSON object in return: `{ "lat": <lat>, "lon":<lon>, "id":<id> }`. The id is the id of the object created. You will need it to delete the object later, so don't forget it. After creating the object, the object is requesting the weather data (current and forecast) every hour.
 If one of the request body properties is not defined you will get a status 400 in return.
 
 To delete a WeatherCollector object of given id, you can send an DELETE request against `<basepath>/weathercollectors` providing the following data as content-type `application/json` in body :`{ "id":<id> }`.
