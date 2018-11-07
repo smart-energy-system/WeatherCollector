@@ -48,7 +48,7 @@ module.exports = class DBController {
     async storeWeatherForecastData(weatherData, lat, lon) {
         try {
             await this.deleteAllWeatherForecastByCoordinates(lat, lon);
-            let stmt = prepare('INSERT INTO WeatherForecast(id, lat, lon, timestamp, temp, windspeed, airpressure, humidity) VALUES (?, ?, ?, ?, ?, ?, ?, ?);');
+            let stmt = prepare('INSERT INTO WeatherForecast(id, lat, lon, timestamp, temp, windspeed, airpressure, humidity, solarradiation) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);');
             let data = weatherData.data;
             let timestamp = Date.now();
             // iterate over Array and save all data
@@ -57,7 +57,8 @@ module.exports = class DBController {
                 let windspeed = singleWeatherData.wind_spd;
                 let airpressure = singleWeatherData.pres;
                 let humidity = (singleWeatherData.rh / 100);
-                stmt.run(uuid(), lat, lon, timestamp, temp, windspeed, airpressure, humidity, (err) => {
+                let solardadiation = singleWeatherData.solar_rad;
+                stmt.run(uuid(), lat, lon, timestamp, temp, windspeed, airpressure, humidity, solardadiation, (err) => {
                     if (err) {
                         console.log('[Error] Error on inserting new weather data')
                     }
@@ -77,13 +78,14 @@ module.exports = class DBController {
      * @param {*} lon longitute of the location
      */
     storeWeatherData(weatherData, lat, lon) {
-        let stmt = prepare('INSERT INTO Weather(id, lat, lon, timestamp, temp, windspeed, airpressure, humidity) VALUES (?, ?, ?, ?, ?, ?, ?, ?);');
+        let stmt = prepare('INSERT INTO Weather(id, lat, lon, timestamp, temp, windspeed, airpressure, humidity, solarradiation) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);');
         let timestamp = new Date();
         let temp = weatherData.data[0].temp;
         let windspeed = weatherData.data[0].wind_spd;
         let airpressure = weatherData.data[0].pres;
         let humidity = (weatherData.data[0].rh / 100);
-        stmt.run(uuid(), lat, lon, timestamp, temp, windspeed, airpressure, humidity, (err) => {
+        let solarradiation = weatherData.data[0].solar_rad;
+        stmt.run(uuid(), lat, lon, timestamp, temp, windspeed, airpressure, humidity, solarradiation, (err) => {
             if (err) {
                 console.log('[Error] Error on inserting new weather data')
             }
@@ -118,7 +120,7 @@ module.exports = class DBController {
      * @param {*} callback function with result in parameter if no error exists else null
      */
     getAllWeatherFromDBByCoordinates(lat, lon, callback) {
-        let stmt = prepare('SELECT id, lat, lon, timestamp, temp, windspeed, airpressure, humidity FROM Weather WHERE lat = ? AND lon = ? ORDER BY timestamp DESC;');
+        let stmt = prepare('SELECT id, lat, lon, timestamp, temp, windspeed, airpressure, humidity, solarradiation FROM Weather WHERE lat = ? AND lon = ? ORDER BY timestamp DESC;');
         stmt.all(lat, lon, function (err, result) {
             if (err) {
                 console.log('[Error] Error on receiving all weatherdata of specified coordinates');
@@ -147,7 +149,7 @@ module.exports = class DBController {
      * @param {*} callback function with result in parameter if no error exists else null
      */
     getWeatherForecastByCoordinates(lat, lon, callback) {
-        let stmt = prepare('SELECT id, lat, lon, timestamp, temp, windspeed, airpressure, humidity FROM WeatherForecast WHERE lat = ? AND lon = ? ORDER BY timestamp DESC;');
+        let stmt = prepare('SELECT id, lat, lon, timestamp, temp, windspeed, airpressure, humidity, solarradiation FROM WeatherForecast WHERE lat = ? AND lon = ? ORDER BY timestamp DESC;');
         stmt.all(lat, lon, function (err, result) {
             if (err) {
                 console.log('[Error] Error on receiving 24 hour weather forecast of specified coordinates');
