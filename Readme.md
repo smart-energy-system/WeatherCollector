@@ -27,6 +27,19 @@ If you did run the complete run command once, a test config file was created. So
 ## Run the server
 If you have already requested a [weather.io](https://www.weatherbit.io/) API key, you can simply run the server with `npm start <API key>`. This will create a config file with your API key, so later you can start the server just running `npm start` command. If you haven't requested a weather.io API key, take a look at the section of requesting one ([Requesting weatherbit.io api key](#requesting-weatherbitio-api-key)).
 
+## Available REST API endpoints
+There are two endpoints available on the server. 
+
+To create a new WeatherCollector object, you can send an POST request against `<basepath>/weathercollectors` providing the following data as content-type `application/json` in body :`{ "lat":<lat>, "lon": <lon> }`. 
+If lat and lon are correct and the object is created successfully you will get status 201 and the following JSON object in return: `{ "lat": <lat>, "lon":<lon>, id:<id> }`. The id is the id of the object created. You will need it to delete the object later, so don't forget it. After creating the object, the object is requesting the weather data (current and forecast) every hour.
+If one of the request body properties is not defined you will get a status 400 in return.
+
+To delete a WeatherCollector object of given id, you can send an DELETE request against `<basepath>/weathercollectors` providing the following data as content-type `application/json` in body :`{ "id":<id> }`.
+ If id is set and there is a WeatherCollector object with such an id, it will be deleted and therefore stops gathering data. The return will be status 200.
+ If id is not set or there is no WeatherCollector object with such an id, the return will be status 400.
+
+
+
 ## Requesting [weatherbit.io](https://www.weatherbit.io/) API key
 
 Go to [weatherbit.io](https://www.weatherbit.io/) and sign up for a new account. Once you have down this, you can choose the free plan and request your API key. The creation of the key should not take long. You can find it on the dashboard.
