@@ -56,7 +56,7 @@ module.exports = class DBController {
                 let temp = singleWeatherData.temp;
                 let windspeed = singleWeatherData.wind_spd;
                 let airpressure = singleWeatherData.pres;
-                let humidity = singleWeatherData.rh;
+                let humidity = (singleWeatherData.rh / 100);
                 stmt.run(uuid(), lat, lon, timestamp, temp, windspeed, airpressure, humidity, (err) => {
                     if (err) {
                         console.log('[Error] Error on inserting new weather data')
@@ -82,7 +82,7 @@ module.exports = class DBController {
         let temp = weatherData.data[0].temp;
         let windspeed = weatherData.data[0].wind_spd;
         let airpressure = weatherData.data[0].pres;
-        let humidity = weatherData.data[0].rh;
+        let humidity = (weatherData.data[0].rh / 100);
         stmt.run(uuid(), lat, lon, timestamp, temp, windspeed, airpressure, humidity, (err) => {
             if (err) {
                 console.log('[Error] Error on inserting new weather data')
