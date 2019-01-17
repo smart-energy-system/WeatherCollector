@@ -1,6 +1,32 @@
 const request = require('request');
 const DBController = require('./DBController');
 
+function dateToISOString(year, month, day) {
+    if (month < 10) {
+        month = `0${month}`;
+    }
+    if (day < 10) {
+        day = `0${day}`;
+    }
+    return `${year}-${month}-${day}`;
+}
+
+function getDateArray() {
+    let dates = [];
+    let date = new Date();
+    for (let i = 6; i > 0; --i) {
+        let year = date.getUTCFullYear();
+        let month = date.getUTCMonth() + 1;
+        let day = date.getUTCDate();
+        dates.push(dateToISOString(year, month, day));
+        // Update date one day before
+        // TODO Pay attention for months with less than 31 days
+        date.setDate(date.getDate() - 1);
+    }
+    return dates;
+}
+
+
 /**
  * Collects weather data from weatherbit.io
  */
@@ -55,6 +81,25 @@ module.exports = class WeatherCollector {
         };
     }
 
+    async retrieveHistoryAndSave() {
+        try {
+            let dates = getDateArray();
+            // Iterate through dates and collect history of each day
+            const weatherData = [];
+            for (let i = 0; i < dates.length - 1; ++i) {
+                let dayHistory = await this.getWeatherHistory(dates[i], dates[i + 1], this.lat, this.lon);
+                dayHistory.forEach((element) => {
+                    weatherData.push(element);
+                });
+            }
+            // Save weather data in DB
+            this.db.storeWeatherHistoryData(weatherData, this.lat, this.lon);
+            //return weatherData;
+        } catch (error) {
+            console.log('[Log] Catched error in retrieving forecast and store it into DB');
+        };
+    }
+
     /**
      * Gets weather data from weatherbit.io by specified coordinates.
      * @param {} lat The latitute coordinate
@@ -85,6 +130,29 @@ module.exports = class WeatherCollector {
         return new Promise((resolve, reject) => {
             request({
                 uri: `https://api.weatherbit.io/v2.0/forecast/hourly?lat=${lat}&lon=${lon}&key=${this.apiToken}&hours=24`,
+                method: 'GET'
+            }, (error, response, body) => {
+                if (error) {
+                    console.log('Error on retrieving weather data');
+                    reject(error);
+                    return;
+                }
+                resolve(JSON.parse(body));
+            });
+        });
+    }
+
+    /**
+     * Gets weather history on hourly basis data from weatherbit.io by specified coordinates.
+     * @param {} startdate The startdate of the history
+     * @param {} enddate The enddate of the history
+     * @param {} lat The latitute coordinate
+     * @param {*} lon The longitute coordinate
+     */
+    getWeatherHistory(startdate, enddate, lat, lon) {
+        return new Promise((resolve, reject) => {
+            request({
+                uri: `https://api.weatherbit.io/v2.0/history/hourly?lat=${lat}&lon=${lon}&start_date=${startdate}&end_date=${enddate}&tz=utc&key=${this.apiToken}`,
                 method: 'GET'
             }, (error, response, body) => {
                 if (error) {

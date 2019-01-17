@@ -8,6 +8,8 @@ function recreateDB() {
         db.run('CREATE TABLE Weather (id VARCHAR(255) PRIMARY KEY, lat REAL, lon REAL, timestamp INTEGER, temp REAL, windspeed REAL, airpressure REAL, humidity REAL, ghi REAL);');
         db.run('DROP TABLE IF EXISTS WeatherForecast;');
         db.run('CREATE TABLE WeatherForecast (id VARCHAR(255) PRIMARY KEY, lat REAL, lon REAL, timestamp INTEGER, temp REAL, windspeed REAL, airpressure REAL, humidity REAL, ghi REAL);');
+        db.run('DROP TABLE IF EXISTS WeatherHistory;');
+        db.run('CREATE TABLE WeatherHistory (id VARCHAR(255) PRIMARY KEY, lat REAL, lon REAL, timestamp INTEGER, temp REAL, windspeed REAL, airpressure REAL, humidity REAL, ghi REAL);');
     });
     db.close();
 

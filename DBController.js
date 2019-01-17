@@ -72,6 +72,38 @@ module.exports = class DBController {
     }
 
     /**
+     * Sores weather history on hourly basis in the DB
+     * @param {*} weatherData JSON Object of retrieved weather data
+     * @param {*} lat latitute of the location
+     * @param {*} lon longitute of the location
+     */
+    async storeWeatherHistoryData(weatherData, lat, lon) {
+        try {
+            await this.deleteAllWeatherHistoryByCoordinates(lat, lon);
+            let stmt = prepare('INSERT INTO WeatherHistory(id, lat, lon, timestamp, temp, windspeed, airpressure, humidity, ghi) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);');
+            let data = weatherData.data;
+            let timestamp = Date.now();
+            // iterate over Array and save all data
+            data.forEach((singleWeatherData) => {
+                let temp = singleWeatherData.temp;
+                let windspeed = singleWeatherData.wind_spd;
+                let airpressure = singleWeatherData.pres;
+                let humidity = (singleWeatherData.rh / 100);
+                let ghi = singleWeatherData.ghi;
+                stmt.run(uuid(), lat, lon, timestamp, temp, windspeed, airpressure, humidity, ghi, (err) => {
+                    if (err) {
+                        console.log('[Error] Error on inserting new weather history data')
+                    }
+                });
+                // Update milliseconds timestamp for next entry
+                timestamp -= 3600000;
+            });
+        } catch (error) {
+            console.log('[Log] Catched error on storing new history data');
+        }
+    }
+
+    /**
      * Stores weather data in the DB.
      * @param {*} weatherData JSON Object of retrieved weather data
      * @param {*} lat latitute of the location
@@ -104,6 +136,27 @@ module.exports = class DBController {
             stmt.run(lat, lon, (err) => {
                 if (err) {
                     console.log('[Error] Error on deleting WeatherForecast');
+                    reject(err);
+                    return;
+                } else {
+                    resolve();
+                }
+            })
+        });
+    }
+
+    /**
+     * Deletes all weather history data of specific coordinates from DB.
+     * @param {*} lat latitute
+     * @param {*} lon longitute
+     * @param {*} callback function with result in parameter if no error exists else null
+     */
+    deleteAllWeatherHistoryByCoordinates(lat, lon) {
+        let stmt = prepare('DELETE FROM WeatherHistory WHERE lat = ? AND lon = ?;');
+        return new Promise((resolve, reject) => {
+            stmt.run(lat, lon, (err) => {
+                if (err) {
+                    console.log('[Error] Error on deleting Weather History');
                     reject(err);
                     return;
                 } else {
@@ -158,5 +211,23 @@ module.exports = class DBController {
             callback(result);
         });
     }
+
+    /**
+    * Gets weather history of specific coordinates from DB.
+    * @param {*} lat latitute
+    * @param {*} lon longitute
+    * @param {*} callback function with result in parameter if no error exists else null
+    */
+    getWeatherHistory(lat, lon, callback) {
+        let stmt = prepare('SELECT id, lat, lon, timestamp, temp, windspeed, airpressure, humidity, ghi FROM WeatherHistory WHERE lat = ? AND lon = ? ORDER BY timestamp DESC;');
+        stmt.all(lat, lon, function (err, result) {
+            if (err) {
+                console.log('[Error] Error on receiving weather history of specified coordinates');
+                callback(null);
+            }
+            callback(result);
+        });
+    }
+
 
 }
