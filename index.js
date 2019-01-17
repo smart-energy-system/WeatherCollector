@@ -1,7 +1,7 @@
 const WeatherCollector = require('./WeatherCollector');
 const fs = require('fs');
 const HashMap = require('hashmap');
-const uuid = require('uuid/v4');
+// const uuid = require('uuid/v4');
 const express = require('express');
 const compression = require('compression');
 const api = express();
@@ -85,7 +85,7 @@ api.use(function (req, res, next) {
     // Website you wish to allow to connect
     res.setHeader('Access-Control-Allow-Origin', '*');
     // Request methods you wish to allow
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE');
     // Request headers you wish to allow
     res.setHeader('Access-Control-Allow-Headers', 'X-Auth-Token,content-type');
     // Set to true if you need the website to include cookies in the requests sent
@@ -102,13 +102,20 @@ api.post('/weathercollectors', (req, res, next) => {
     let lat = req.body.lat;
     let lon = req.body.lon;
     if (lat && lon) {
-        let apiToken = config.apiToken;
-        let weatherCollector = new WeatherCollector(apiToken, lat, lon);
-        weatherCollector.start();
-        let id = uuid();
-        weatherCollectors.set(id, weatherCollector);
-        writeObjects();
-
+        let id = `lat:${Math.round(lat * 10) / 10}lon:${Math.round(lon * 10) / 10}`;
+        // let id = uuid();
+        /*
+         * Use only 1 WeatherCollector object in this location (location rounded to 1 decimal)
+         * Pay attention that anyone with this id can delete the object afterwards.
+         * This can have side effects with multiple users
+         */ 
+        if (!weatherCollectors.has(id)) {
+            let apiToken = config.apiToken;
+            let weatherCollector = new WeatherCollector(apiToken, lat, lon);
+            weatherCollector.start();
+            weatherCollectors.set(id, weatherCollector);
+            writeObjects();
+        }
         res.status(201).end(JSON.stringify({
             lat: lat,
             lon: lon,
