@@ -50,6 +50,11 @@ module.exports = class WeatherCollector {
             this.retrieveWeatherAndSave();
             this.retrieveForecastAndSave();
         }, 3600000);
+
+        this.retrieveHistoryAndSave();
+        setInterval(() => {
+            this.retrieveHistoryAndSave();
+        }, 86400000);
     }
 
 
@@ -87,8 +92,8 @@ module.exports = class WeatherCollector {
             // Iterate through dates and collect history of each day
             const weatherData = [];
             for (let i = 0; i < dates.length - 1; ++i) {
-                let dayHistory = await this.getWeatherHistory(dates[i], dates[i + 1], this.lat, this.lon);
-                dayHistory.forEach((element) => {
+                let dayHistory = await this.getWeatherHistory(dates[i + 1], dates[i], this.lat, this.lon);
+                dayHistory.data.forEach((element) => {
                     weatherData.push(element);
                 });
             }

@@ -102,7 +102,9 @@ api.post('/weathercollectors', (req, res, next) => {
     let lat = req.body.lat;
     let lon = req.body.lon;
     if (lat && lon) {
-        let id = `lat:${Math.round(lat * 10) / 10}lon:${Math.round(lon * 10) / 10}`;
+        lat = Math.round(lat * 10) / 10;
+        lon = Math.round(lon * 10) / 10;
+        let id = `lat:${lat}lon:${lon}`;
         // let id = uuid();
         /*
          * Use only 1 WeatherCollector object in this location (location rounded to 1 decimal)

@@ -81,10 +81,9 @@ module.exports = class DBController {
         try {
             await this.deleteAllWeatherHistoryByCoordinates(lat, lon);
             let stmt = prepare('INSERT INTO WeatherHistory(id, lat, lon, timestamp, temp, windspeed, airpressure, humidity, ghi) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);');
-            let data = weatherData.data;
             let timestamp = Date.now();
             // iterate over Array and save all data
-            data.forEach((singleWeatherData) => {
+            weatherData.forEach((singleWeatherData) => {
                 let temp = singleWeatherData.temp;
                 let windspeed = singleWeatherData.wind_spd;
                 let airpressure = singleWeatherData.pres;
