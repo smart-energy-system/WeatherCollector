@@ -1,24 +1,25 @@
 const request = require('request');
 const DBController = require('./DBController');
 
-function dateToISOString(year, month, day) {
+function dateToISOString(year, month, day, hour) {
     if (month < 10) {
         month = `0${month}`;
     }
     if (day < 10) {
         day = `0${day}`;
     }
-    return `${year}-${month}-${day}`;
+    return `${year}-${month}-${day}:${hour}`;
 }
 
 function getDateArray() {
     let dates = [];
     let date = new Date();
+    let hour = date.getUTCHours();
     for (let i = 6; i > 0; --i) {
         let year = date.getUTCFullYear();
         let month = date.getUTCMonth() + 1;
         let day = date.getUTCDate();
-        dates.push(dateToISOString(year, month, day));
+        dates.push(dateToISOString(year, month, day, hour));
         // Update date one day before
         // TODO Pay attention for months with less than 31 days
         date.setDate(date.getDate() - 1);
@@ -103,6 +104,24 @@ module.exports = class WeatherCollector {
         } catch (error) {
             console.log('[Log] Catched error in retrieving forecast and store it into DB');
         };
+    }
+
+    async retrieveTotalWeatherAndSave() {
+        try {
+            let dates = getDateArray();
+            // Iterate through dates and collect history of each day
+            const weatherData = [];
+            for (let i = 0; i < dates.length - 1; ++i) {
+                let dayHistory = await this.getWeatherHistory(dates[i + 1], dates[i], this.lat, this.lon);
+                dayHistory.data.forEach((element) => {
+                    weatherData.push(element);
+                });
+            }
+            let forecast = await this.getWeatherForecast(this.lat, this.lon);
+            this.db.storeTotalWeatherData(weatherData, forecast, this.lat, this.lon);
+        } catch (error) {
+            console.log('[Log] Catched error in retrieving forecast and store it into DB');
+        }
     }
 
     /**

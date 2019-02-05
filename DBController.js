@@ -102,6 +102,45 @@ module.exports = class DBController {
         }
     }
 
+    async storeTotalWeatherData(weatherHistory, weatherForecast, lat, lon) {
+        try {
+            await this.deleteAllTotalWeatherByCoordinates(lat, lon);
+            let stmt = prepare('INSERT INTO TotalWeather(id, lat, lon, timestamp, temp, windspeed, airpressure, humidity, ghi) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);');
+            let timestamp = Date.now();
+            let timestampForecast = timestamp;
+            weatherHistory.forEach((singleWeatherData) => {
+                // Update milliseconds timestamp for next entry
+                timestamp -= 3600000;
+                let temp = singleWeatherData.temp;
+                let windspeed = singleWeatherData.wind_spd;
+                let airpressure = singleWeatherData.pres;
+                let humidity = (singleWeatherData.rh / 100);
+                let ghi = singleWeatherData.ghi;
+                stmt.run(uuid(), lat, lon, timestamp, temp, windspeed, airpressure, humidity, ghi, (err) => {
+                    if (err) {
+                        console.log('[Error] Error on inserting new weather history data')
+                    }
+                });
+            });
+            weatherForecast.forEach((singleWeatherData) => {
+                let temp = singleWeatherData.temp;
+                let windspeed = singleWeatherData.wind_spd;
+                let airpressure = singleWeatherData.pres;
+                let humidity = (singleWeatherData.rh / 100);
+                let ghi = singleWeatherData.ghi;
+                stmt.run(uuid(), lat, lon, timestamp, temp, windspeed, airpressure, humidity, ghi, (err) => {
+                    if (err) {
+                        console.log('[Error] Error on inserting new weather data')
+                    }
+                });
+                // Update milliseconds timestamp for next entry
+                timestamp += 3600000;
+            });
+        } catch (error) {
+            console.log('[Log] Catched error on storing new total weather data');
+        }
+    }
+
     /**
      * Stores weather data in the DB.
      * @param {*} weatherData JSON Object of retrieved weather data
@@ -165,6 +204,22 @@ module.exports = class DBController {
         });
     }
 
+
+    deleteAllTotalWeatherByCoordinates(lat, lon) {
+        let stmt = prepare('DELETE FROM TotalWeather WHERE lat = ? AND lon = ?;');
+        return new Promise((resolve, reject) => {
+            stmt.run(lat, lon, (err) => {
+                if (err) {
+                    console.log('[Error] Error on deleting Total Weather');
+                    reject(err);
+                    return;
+                } else {
+                    resolve();
+                }
+            })
+        });
+    }
+
     /**
      * Gets all weather data of specific coordinates from DB.
      * @param {*} lat latitute
@@ -219,6 +274,17 @@ module.exports = class DBController {
     */
     getWeatherHistory(lat, lon, callback) {
         let stmt = prepare('SELECT id, lat, lon, timestamp, temp, windspeed, airpressure, humidity, ghi FROM WeatherHistory WHERE lat = ? AND lon = ? ORDER BY timestamp DESC;');
+        stmt.all(lat, lon, function (err, result) {
+            if (err) {
+                console.log('[Error] Error on receiving weather history of specified coordinates');
+                callback(null);
+            }
+            callback(result);
+        });
+    }
+
+    getTotalWeatherByCoordinates(lat, lon, callback) {
+        let stmt = prepare('SELECT id, lat, lon, timestamp, temp, windspeed, airpressure, humidity, ghi FROM TotalWeather WHERE lat = ? AND lon = ? ORDER BY timestamp DESC;');
         stmt.all(lat, lon, function (err, result) {
             if (err) {
                 console.log('[Error] Error on receiving weather history of specified coordinates');

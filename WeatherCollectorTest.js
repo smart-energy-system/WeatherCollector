@@ -40,12 +40,18 @@ init((config) => {
             weatherCollector.retrieveWeatherAndSave();
         } else if (config.mode == 'collect forecast') {
             weatherCollector.retrieveForecastAndSave();
+        } else if (config.mode == 'collect total') {
+            weatherCollector.retrieveTotalWeatherAndSave();
         } else if (config.mode == 'get') {
             db.getLatestWeatherFromDBByCoordinates(config.lat, config.lon, (result) => {
                 console.log(result);
             });
         } else if (config.mode == 'get forecast') {
             db.getWeatherForecastByCoordinates(config.lat, config.lon, (result) => {
+                console.log(result);
+            });
+        } else if (config.mode == 'get total') {
+            db.getTotalWeatherByCoordinates(config.lat, config.lon, (result) => {
                 console.log(result);
             });
         } else if (config.mode == 'collect history') {
