@@ -47,9 +47,11 @@ module.exports = class WeatherCollector {
     async start() {
         this.retrieveWeatherAndSave();
         this.retrieveForecastAndSave();
+        this.retrieveTotalWeatherAndSave();
         setInterval(() => {
             this.retrieveWeatherAndSave();
             this.retrieveForecastAndSave();
+            this.retrieveTotalWeatherAndSave();
         }, 3600000);
 
         this.retrieveHistoryAndSave();
@@ -118,9 +120,9 @@ module.exports = class WeatherCollector {
                 });
             }
             let forecast = await this.getWeatherForecast(this.lat, this.lon);
-            this.db.storeTotalWeatherData(weatherData, forecast, this.lat, this.lon);
+            this.db.storeTotalWeatherData(weatherData, forecast.data, this.lat, this.lon);
         } catch (error) {
-            console.log('[Log] Catched error in retrieving forecast and store it into DB');
+            console.log('[Log] Catched error in retrieving total weather data and store it into DB');
         }
     }
 

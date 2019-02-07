@@ -128,13 +128,13 @@ module.exports = class DBController {
                 let airpressure = singleWeatherData.pres;
                 let humidity = (singleWeatherData.rh / 100);
                 let ghi = singleWeatherData.ghi;
-                stmt.run(uuid(), lat, lon, timestamp, temp, windspeed, airpressure, humidity, ghi, (err) => {
+                stmt.run(uuid(), lat, lon, timestampForecast, temp, windspeed, airpressure, humidity, ghi, (err) => {
                     if (err) {
                         console.log('[Error] Error on inserting new weather data')
                     }
                 });
                 // Update milliseconds timestamp for next entry
-                timestamp += 3600000;
+                timestampForecast += 3600000;
             });
         } catch (error) {
             console.log('[Log] Catched error on storing new total weather data');
